@@ -14,6 +14,7 @@ class messageInfo(models.Model):
      userName=models.CharField(max_length=255)
      acceptPeople=models.TextField()
      acceptPeopleIds=models.TextField()
+     imgUrl=models.ImageField(null=True)
 
 
     # # 数据库查询
@@ -85,7 +86,7 @@ class messageInfo(models.Model):
     #         # 连接数据库
     #         conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='12345678', db='test',
     #                                charset='utf8')
-    #         # 获取游标
+    #         # 获取游标rn
     #         cur = conn.cursor()
     #         # 执行sql查询语句
     #         cur.execute(sql)
@@ -96,4 +97,4 @@ class messageInfo(models.Model):
     #         conn.close()
     #         return "删除数据成功"
     #     except Exception as e:
-    #         return "删除数据失败"
+    #         retu "删除数据失败"
