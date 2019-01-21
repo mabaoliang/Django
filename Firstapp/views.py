@@ -24,11 +24,12 @@ def loginWay(request):
 
      if request.method=="POST":
 
-          print(request.POST)
-          data = sql.user.objects.values("id","userName")
+          data =sql.messageInfo.objects.values() #sql.user.objects.values("id","userName")
           nameA =request.POST.get('userName','ooo')
           passwordA =request.POST.get('password','kkk')#request.GET['password']   #
-          print(nameA,passwordA)
+          # print(nameA,passwordA)
+
+          #数据库中的数据转为json后传递给前端
           listA={}
           listA['list']=list(data)
           print(listA)

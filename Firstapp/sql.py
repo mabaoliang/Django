@@ -3,7 +3,7 @@ import pymysql
 
 
 class user(models.Model):
-     userID=models.BigIntegerField
+
      userName=models.CharField(max_length=255)
      password=models.CharField(max_length=255)
 
@@ -12,7 +12,6 @@ class messageInfo(models.Model):
      title=models.TextField()
      context=models.TextField()
      userName=models.CharField(max_length=255)
-     userID=models.BigIntegerField
      acceptPeople=models.TextField()
      acceptPeopleIds=models.TextField()
 
