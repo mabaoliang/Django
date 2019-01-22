@@ -17,10 +17,10 @@ def loginWay(request):
       password=request.GET.get('password','kkk')#['password']
       print(name,password)
       # print(request)
-      data=sql.user.objects.all()
+      data=sql.messageInfo.objects.all()
       # area=sql.user.objects.create(userName='admin',password='123456')
       # print(data)
-      return  HttpResponse(data[0].userName)
+      return  HttpResponse(data[0].imgUrl)
 
      if request.method=="POST":
 
@@ -34,3 +34,12 @@ def loginWay(request):
           listA['list']=list(data)
           print(listA)
           return  JsonResponse(listA) #HttpResponse('{"name":"zhangsan","age":23,"email":"chentging@aliyun.com"}')
+
+def saveImg(request):
+    if request.method=="POST":
+        img=request.POST.get('file','')
+       # print(img)
+       # obj=sql.Image.objects.create(image=img)
+       # obj.save()
+    return HttpResponse('{"name":"zhangsan","age":23,"email":"chentging@aliyun.com"}')
+

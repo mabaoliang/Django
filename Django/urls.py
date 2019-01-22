@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', views.hello),
     path('loginWay/', views.loginWay),
+    path('saveImg/', views.saveImg),
 ]
