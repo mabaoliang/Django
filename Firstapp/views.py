@@ -35,11 +35,3 @@ def loginWay(request):
           print(listA)
           return  JsonResponse(listA) #HttpResponse('{"name":"zhangsan","age":23,"email":"chentging@aliyun.com"}')
 
-def saveImg(request):
-    if request.method=="POST":
-        img=request.POST.get('file','')
-       # print(img)
-       # obj=sql.Image.objects.create(image=img)
-       # obj.save()
-    return HttpResponse('{"name":"zhangsan","age":23,"email":"chentging@aliyun.com"}')
-
