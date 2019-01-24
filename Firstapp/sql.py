@@ -9,19 +9,7 @@ class user(models.Model):
      password=models.CharField(max_length=255)
 
 
-class messageInfo(models.Model):
-     title=models.TextField()
-     context=models.TextField()
-     userName=models.CharField(max_length=255)
-     acceptPeople=models.TextField()
-     acceptPeopleIds=models.TextField()
 
-class Image(models.Model):
-    # url = models.TextField(null=True)
-    image = models.ImageField(upload_to=str('image/{time}'.format(time=str(datetime.date.today().strftime("%Y%m/%d")))))
-    create_time = models.DateTimeField(auto_now_add=True, null=True)
-    update_time = models.DateTimeField(auto_now=True, null=True)
-    external_id=models.CharField(max_length=255,null=True)
 
 
 

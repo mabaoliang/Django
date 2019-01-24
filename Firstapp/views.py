@@ -20,7 +20,7 @@ def loginWay(request):
       data=sql.messageInfo.objects.all()
       # area=sql.user.objects.create(userName='admin',password='123456')
       # print(data)
-      return  HttpResponse(data[0].imgUrl)
+      return    JsonResponse('{"msg":"请求模式","status":"fail"}') #HttpResponse(data[0].imgUrl)
 
      if request.method=="POST":
 
