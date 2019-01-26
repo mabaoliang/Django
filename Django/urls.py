@@ -20,4 +20,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', views.hello),
     path('loginWay/', views.loginWay),
+    path('creatUser/', views.creatUser),
+    path('selectUser/', views.selectUser),
+    path('updateUser/', views.updateUser),
+    path('deleteUser/', views.deleteUser),
+    path('seledctSendsing/', views.seledctSendsing),
+
+
 ]

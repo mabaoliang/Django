@@ -21,11 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '1gx@%_8ufoat=*8(r%th9*w_h8*4efn_=ux)@@mz%uhy6r*9c6'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS =['*',]
 
 # add by mbl
 MEDIA_URL = '/media/'

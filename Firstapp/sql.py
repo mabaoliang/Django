@@ -3,10 +3,63 @@ import pymysql
 import datetime
 
 
-class user(models.Model):
+#用户表
+class User(models.Model):
 
-     userName=models.CharField(max_length=255)
-     password=models.CharField(max_length=255)
+     userName=models.CharField(max_length=255)# 账号
+     password=models.CharField(max_length=255)#密码
+     name=models.CharField(max_length=255) #姓名
+     userId=models.AutoField(primary_key=True) #id
+     tele=models.CharField(max_length=255) #手机号
+     superiorIds=models.CharField(max_length=255,null=True,blank=True) #上级ID
+     power=models.IntegerField() #权限 1有 0无
+
+#项目表
+class Project(models.Model):
+     projectId=models.AutoField(primary_key=True) #ID
+     projectName=models.CharField(max_length=255) #项目名
+     projectStartTime=models.DateTimeField(auto_now=True)#开始时间
+     projectEndTime=models.DateTimeField(auto_now=True)#结束时间
+     projectOnTime=models.DateTimeField(auto_now=True) #上线时间
+     projectSingleId=models.CharField(max_length=255) #派单人
+     projectFunction=models.TextField(null=True,blank=True) #功能模块
+     projectStatus=models.IntegerField(default=0) #状态 0未完成 1完成
+     user=models.ForeignKey('User',on_delete=models.DO_NOTHING) #用户表
+
+#反馈表
+class Feedback(models.Model):
+     feedId=models.AutoField(primary_key=True) #ID
+     userId=models.IntegerField() #用户ID
+     sendUserId = models.IntegerField(null=True)  # 派单人员id
+     feedTime=models.DateTimeField(auto_now=True)#反馈时间
+     projectId=models.IntegerField()#项目id
+     feedComplete=models.TextField(null=True,blank=True)#完成
+     feedUnfinished=models.TextField(null=True,blank=True) #未完成
+     feedConclusion=models.TextField(null=True,blank=True) #工作总结
+     feedProblem=models.TextField(null=True,blank=True) #问题
+     user=models.ForeignKey('User',on_delete=models.DO_NOTHING) #用户表
+     project=models.ForeignKey('Project',on_delete=models.DO_NOTHING) #项目表
+
+#用户与项目的关联表
+class AssociatedPU(models.Model):
+     associateId=models.AutoField(primary_key=True) #id
+     userId=models.IntegerField(null=True,blank=True) #用户ID
+     sendUserId=models.IntegerField(null=True) #派单人员id
+     projectId=models.IntegerField(null=True,blank=True) #项目
+     statuse=models.IntegerField(default=0) #状态
+     type=models.IntegerField(default=0) #类型
+     user = models.ForeignKey('User',on_delete=models.DO_NOTHING)  # 用户表
+     project = models.ForeignKey('Project',on_delete=models.DO_NOTHING)  # 项目表
+
+
+
+
+
+
+
+
+
+
 
 
 
