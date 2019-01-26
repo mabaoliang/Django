@@ -170,6 +170,44 @@ def creatProject(request):
             return HttpResponse('{"msg":"创建项目失败","status":"fail"}')
 
 
+#修改项目
+def updateProject(request):
+    if request.method == "GET":
+        return HttpResponse('{"msg":"修改项目失败","status":"fail"}')
+    if request.method=="POST":
+        projectId=request.POST.get('projectId',0)
+        projectName = request.POST.get('projectName', '')
+        projectStart = request.POST.get('projectStartTime', '')
+        projectEnd = request.POST.get('projectEndTime', '')
+        projectOn = request.POST.get('projectOnTime', '')
+        projectSiginId = request.POST.get('projectSingleId', '')
+        projectFunction = request.POST.get('projectFunction', '')
+        projectStatus = request.POST.get('projectStatus', 0)
+        if projectId!=0:
+
+            try:
+                obj=sql.Project.objects.get(projectId=projectId)
+                if len(projectName)>0:
+                  obj.projectName=projectName
+                if len(projectStart):
+                  obj.projectStartTime=projectStart
+                if len(projectEnd):
+                  obj.projectEndTime=projectEnd
+                if len(projectOn):
+                  obj.projectOnTime=projectOn
+                if len(projectSiginId)>0:
+                  obj.projectSingleId=projectSiginId
+                if len(projectFunction)>0:
+                  obj.projectFunction=projectFunction
+                obj.projectStatus=projectStatus
+                obj.save()
+                return  HttpResponse('{"msg":"修改项目成功","status":"success"}')
+            except Exception as e:
+
+               return  HttpResponse('{"msg":"修改项目失败","status":"fail"}')
+        else:
+            return HttpResponse('{"msg":"修改项目失败","status":"fail"}')
+
 #查询项目
 def selectProject(request):
     if request.method == "GET":

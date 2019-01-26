@@ -24,6 +24,9 @@ urlpatterns = [
     path('selectUser/', views.selectUser),
     path('updateUser/', views.updateUser),
     path('deleteUser/', views.deleteUser),
+    path('creatProject/', views.creatProject),
+    path('selectProject/', views.selectProject),
+    path('deleteProject/', views.deleteProject),
     path('seledctSendsing/', views.seledctSendsing),
 
 

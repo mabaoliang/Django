@@ -24,7 +24,7 @@ class Project(models.Model):
      projectSingleId=models.CharField(max_length=255) #派单人
      projectFunction=models.TextField(null=True,blank=True) #功能模块
      projectStatus=models.IntegerField(default=0) #状态 0未完成 1完成
-     user=models.ForeignKey('User',on_delete=models.DO_NOTHING) #用户表
+     user=models.ForeignKey('User',on_delete=models.CASCADE) #用户表
 
 #反馈表
 class Feedback(models.Model):
@@ -37,8 +37,8 @@ class Feedback(models.Model):
      feedUnfinished=models.TextField(null=True,blank=True) #未完成
      feedConclusion=models.TextField(null=True,blank=True) #工作总结
      feedProblem=models.TextField(null=True,blank=True) #问题
-     user=models.ForeignKey('User',on_delete=models.DO_NOTHING) #用户表
-     project=models.ForeignKey('Project',on_delete=models.DO_NOTHING) #项目表
+     user=models.ForeignKey('User',on_delete=models.CASCADE) #用户表
+     project=models.ForeignKey('Project',on_delete=models.CASCADE) #项目表
 
 #用户与项目的关联表
 class AssociatedPU(models.Model):
@@ -48,8 +48,8 @@ class AssociatedPU(models.Model):
      projectId=models.IntegerField(null=True,blank=True) #项目
      statuse=models.IntegerField(default=0) #状态
      type=models.IntegerField(default=0) #类型
-     user = models.ForeignKey('User',on_delete=models.DO_NOTHING)  # 用户表
-     project = models.ForeignKey('Project',on_delete=models.DO_NOTHING)  # 项目表
+     user = models.ForeignKey('User',on_delete=models.CASCADE)  # 用户表
+     project = models.ForeignKey('Project',on_delete=models.CASCADE)  # 项目表
 
 
 
