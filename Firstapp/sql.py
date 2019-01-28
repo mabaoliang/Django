@@ -18,9 +18,9 @@ class User(models.Model):
 class Project(models.Model):
      projectId=models.AutoField(primary_key=True) #ID
      projectName=models.CharField(max_length=255) #项目名
-     projectStartTime=models.DateTimeField(auto_now=True)#开始时间
-     projectEndTime=models.DateTimeField(auto_now=True)#结束时间
-     projectOnTime=models.DateTimeField(auto_now=True) #上线时间
+     projectStartTime=models.DateTimeField()#开始时间
+     projectEndTime=models.DateTimeField()#结束时间
+     projectOnTime=models.DateTimeField() #上线时间
      projectSingleId=models.CharField(max_length=255) #派单人
      projectFunction=models.TextField(null=True,blank=True) #功能模块
      projectStatus=models.IntegerField(default=0) #状态 0未完成 1完成
@@ -31,12 +31,14 @@ class Feedback(models.Model):
      feedId=models.AutoField(primary_key=True) #ID
      userId=models.IntegerField() #用户ID
      sendUserId = models.IntegerField(null=True)  # 派单人员id
-     feedTime=models.DateTimeField(auto_now=True)#反馈时间
+     feedTime=models.DateTimeField(auto_now=True,null=True,blank=True)#反馈时间
      projectId=models.IntegerField()#项目id
      feedComplete=models.TextField(null=True,blank=True)#完成
      feedUnfinished=models.TextField(null=True,blank=True) #未完成
      feedConclusion=models.TextField(null=True,blank=True) #工作总结
      feedProblem=models.TextField(null=True,blank=True) #问题
+     feedSendTime=models.DateTimeField(auto_now=True,null=True,blank=True) #管理员的回执
+     status=models.IntegerField(default=0)   #0用户 1管理员
      user=models.ForeignKey('User',on_delete=models.CASCADE) #用户表
      project=models.ForeignKey('Project',on_delete=models.CASCADE) #项目表
 
@@ -46,8 +48,9 @@ class AssociatedPU(models.Model):
      userId=models.IntegerField(null=True,blank=True) #用户ID
      sendUserId=models.IntegerField(null=True) #派单人员id
      projectId=models.IntegerField(null=True,blank=True) #项目
-     statuse=models.IntegerField(default=0) #状态
+     statuse=models.IntegerField(default=0) #状态 是否修改 0未修改 1修改
      type=models.IntegerField(default=0) #类型
+     orderTime=models.DateTimeField(auto_now=True,null=True,blank=True) #派单时间
      user = models.ForeignKey('User',on_delete=models.CASCADE)  # 用户表
      project = models.ForeignKey('Project',on_delete=models.CASCADE)  # 项目表
 

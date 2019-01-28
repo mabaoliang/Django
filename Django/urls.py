@@ -27,7 +27,13 @@ urlpatterns = [
     path('creatProject/', views.creatProject),
     path('selectProject/', views.selectProject),
     path('deleteProject/', views.deleteProject),
+    path('updateProject/', views.updateProject),
+    path('creatFeek/', views.creatFeek),
+    path('updateFeek/', views.updateFeek),
+    path('selectFeek/', views.selectFeek),
+    path('deleteFeek/', views.deleteFeek),
+    path('sendSingleWay/', views.sendSingleWay),
     path('seledctSendsing/', views.seledctSendsing),
-
+    path('modefiedOrder/', views.modefiedOrder),
 
 ]

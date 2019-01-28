@@ -140,14 +140,19 @@ def deleteUser(request):
     if request.method=="POST":
         userId=request.POST.get('userId',0)
         if userId !=0:
-            sql.User.objects.filter(userId=userId).delete()
-            listA = {}
-            data = sql.User.objects.values()
-            listA["msg"] = "删除成功"
-            listA["status"] = "success"
-            listA["data"] = list(data)
 
-            return JsonResponse(listA)  #
+            try:
+               sql.User.objects.filter(userId=userId).delete()
+               listA = {}
+               data = sql.User.objects.values()
+               listA["msg"] = "删除成功"
+               listA["status"] = "success"
+               listA["data"] = list(data)
+               return JsonResponse(listA)  #
+            except Exception as e:
+
+                return HttpResponse('{"msg":"用户下有项目有反馈所以用户删除失败","status":"fail"}')
+
         else:
             return HttpResponse('{"msg":"用户删除失败","status":"fail"}')
 
@@ -156,6 +161,7 @@ def creatProject(request):
     if request.method == "GET":
         return HttpResponse('{"msg":"创建项目失败","status":"fail"}')
     if request.method=="POST":
+        #(time.strptime('2019-09-18 16:48:09', '%Y-%m-%d %H:%M:%S'))
          projectName=request.POST.get('projectName','')
          projectStart=request.POST.get('projectStartTime','')
          projectEnd=request.POST.get('projectEndTime','')
@@ -164,7 +170,11 @@ def creatProject(request):
          projectFunction=request.POST.get('projectFunction','')
          projectStatus=request.POST.get('projectStatus',0)
          if len(projectName)>0 and len(projectStart)>0 and len(projectEnd)>0 and len(projectOn)>0 and len(projectSiginId)>0 :
-             sql.Project.objects.create(projectName=projectName,projectStartTime=projectStart,projectEndTime=projectEnd,projectOnTime=projectOn,projectSingleId=projectSiginId,projectFunction=projectFunction,projectStatus=projectStatus,user_id=projectSiginId)
+             # projectStart = time.strptime(projectStart, '%Y-%m-%d %H:%M:%S')
+             # projectEnd = time.strptime(projectEnd, '%Y-%m-%d %H:%M:%S')
+             # projectOn = time.strptime(projectOn, '%Y-%m-%d %H:%M:%S')
+             # print(projectStart)
+             sql.Project.objects.create(projectName=projectName,projectStartTime=projectStart,projectEndTime=projectEnd,projectOnTime=projectOn,projectSingleId=projectSiginId,projectFunction=projectFunction,projectStatus=projectStatus,user_id=int(projectSiginId))
              return HttpResponse('{"msg":"创建项目成功","status":"success"}')
          else:
             return HttpResponse('{"msg":"创建项目失败","status":"fail"}')
@@ -183,20 +193,23 @@ def updateProject(request):
         projectSiginId = request.POST.get('projectSingleId', '')
         projectFunction = request.POST.get('projectFunction', '')
         projectStatus = request.POST.get('projectStatus', 0)
+        print(1313)
         if projectId!=0:
 
             try:
                 obj=sql.Project.objects.get(projectId=projectId)
                 if len(projectName)>0:
                   obj.projectName=projectName
-                if len(projectStart):
+                if len(projectStart)>0:
                   obj.projectStartTime=projectStart
-                if len(projectEnd):
+                if len(projectEnd)>0:
                   obj.projectEndTime=projectEnd
-                if len(projectOn):
+                if len(projectOn)>0:
                   obj.projectOnTime=projectOn
                 if len(projectSiginId)>0:
+                     #项目添加人员
                   obj.projectSingleId=projectSiginId
+                  obj.user_id=int(projectSiginId)
                 if len(projectFunction)>0:
                   obj.projectFunction=projectFunction
                 obj.projectStatus=projectStatus
@@ -214,7 +227,7 @@ def selectProject(request):
         return HttpResponse('{"msg":"查询项目失败","status":"fail"}')
     if request.method == "POST":
         userId=request.POST.get("userId",0)
-        sendUserId=request.POST.get("projectSingleId",'')
+        sendUserId=request.POST.get("projectSingleId",'0')
         if userId!=0 or len(sendUserId)>0:
             if userId!=0:
                data=sql.AssociatedPU.objects.filter(userId=userId) #sql.Project.objects.filter(user_id=userId).values()
@@ -251,8 +264,12 @@ def deleteProject(request):
         # userId=request.POST.get('projectSingleId','')
         projectId=request.POST.get('projectId',0)
         if projectId!=0:
-           sql.Project.objects.filter(projectId=projectId).delete()
-           return HttpResponse('{"msg":"项目删除成功","status":"success"}')
+             try:
+                 sql.Project.objects.filter(projectId=projectId).delete()
+                 return HttpResponse('{"msg":"项目删除成功","status":"success"}')
+             except Exception as e:
+                 return HttpResponse('{"msg":"项目已有开发人员无法删除","status":"fail"}')
+
         else:
             return HttpResponse('{"msg":"删除项目失败","status":"fail"}')
 
@@ -263,16 +280,56 @@ def creatFeek(request):
         return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
     if request.method=="POST":
         userId=request.POST.get("userId",0)
-        feedTime=request.POST.get("feedTime","")
+        feedTime=datetime.datetime.now()
         projectId=request.POST.get("projectId",0)
         feedcom=request.POST.get("feedComplete","")
         feedunfinished=request.POST.get("feeedUnfinished","")
         feedConclusion=request.POST.get("feedConclusion","")
         feedProblem=request.POST.get("feedProblem","")
         sendUserId=request.POST.get("sendUserId",0)
+        status=request.POST.get("status",0)
         if  userId!=0 and projectId!=0 and sendUserId!=0 :
-            sql.Feedback.objects.create(userId=userId,user_id=userId,feedTime=feedTime,project_id=projectId,projectId=projectId,feedComplete=feedcom,feedUnfinished=feedunfinished,feedConclusion=feedConclusion,feedProblem=feedProblem,sendUserId=sendUserId)
+            sql.Feedback.objects.create(userId=userId,user_id=userId,feedTime=feedTime,project_id=projectId,projectId=projectId,feedComplete=feedcom,feedUnfinished=feedunfinished,feedConclusion=feedConclusion,feedProblem=feedProblem,sendUserId=sendUserId,status=status)
             return HttpResponse('{"msg":"添加回执成功","status":"success"}')
+
+
+#管理员添加反馈
+
+def updateFeek(request):
+    if request.method == "GET":
+        return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
+
+    if request.method=="POST":
+         feekId=request.POST.get("feekId",0)
+         userId = request.POST.get("userId", 0)
+         feedTime =datetime.datetime.now()  #request.POST.get("feedSendTime", "")
+         projectId = request.POST.get("projectId", 0)
+         sendUserId = request.POST.get("sendUserId", 0)
+         feedProblem = request.POST.get("feedProblem", "")
+         status=request.POST.get("status",0)
+         projectStatus=request.POST.get("projectStatus",0)
+
+         if feekId!=0 and userId!=0 and len(feedTime)  and projectId!=0 and sendUserId!=0 and len(feedProblem) and status==0:
+              try:
+
+                     obj=sql.Feedback.objects.get(feedId=feekId)
+                     obj.feedProblem=feedProblem
+                     obj.feedSendTime=feedTime
+                     obj.status=1
+                     obj.project.projectStatus=projectStatus
+                     obj.save()
+                     return HttpResponse('{"msg":"添加回执成功","status":"success"}')
+              except Exception as e:
+                       return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
+
+
+         else:
+          return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
+
+
+
+
+
 
 #查询回执
 def selectFeek(request):
@@ -301,6 +358,30 @@ def selectFeek(request):
         else:
          return HttpResponse('{"msg":"查询失败","status":"fail"}')
 
+#删除反馈
+
+def  deleteFeek(request):
+    if request.method == "GET":
+        return HttpResponse('{"msg":"删除反馈信息失败","status":"fail"}')
+
+
+    if  request.method=="POST":
+        feekId = request.POST.get("feekId", 0)
+
+        if feekId!=0:
+             try:
+                  sql.Feedback.objects.get(feedId=feekId).delete()
+                  return HttpResponse('{"msg":"删除反馈信息成功","status":"success"}')
+
+             except Exception as e:
+                 return HttpResponse('{"msg":"删除反馈信息失败","status":"fail"}')
+
+        else:
+
+            return HttpResponse('{"msg":"删除反馈信息失败","status":"fail"}')
+
+
+
 
 #派单
 def sendSingleWay(request):
@@ -309,13 +390,22 @@ def sendSingleWay(request):
          return  HttpResponse('{"msg":"派单失败","status":"fail"}')
 
      if request.method=="POST":
-          userId=request.POST.get("userId",0)
+          userId=request.POST.get("userIds",'')
           projectId=request.POST.get("projectId",0)
           status=request.POST.get("status",0)
           type=request.POST.get("type",0)
+          time=datetime.datetime.now()
           sendyuserId=request.POST.get("sendUserId",0)
-          if userId>0 and projectId>0 and sendyuserId>0:
-              sql.AssociatedPU.objects.create(userId=userId,user_id=userId,project_id=projectId,projectId=projectId,type=type,statuse=status,sendUserId=sendyuserId)
+          if len(userId)>0 and projectId!=0 and sendyuserId!=0:
+
+              arr=[]
+              for c in userId:
+                  if c!=",":
+                    arr.append(c)
+
+              for item in arr :
+                  iid=int(item)
+                  sql.AssociatedPU.objects.create(userId=iid,user_id=iid,project_id=projectId,projectId=projectId,type=type,statuse=status,sendUserId=sendyuserId,orderTime=time)
               return  HttpResponse('{"msg":"派单成功","status":"success"}')
           else:
            return HttpResponse('{"msg":"派单失败","status":"fail"}')
@@ -390,6 +480,30 @@ def seledctSendsing(request):
           return HttpResponse('{"msg":"查询派单失败","status":"fail"}')
 
 
+
+#转移派单
+def modefiedOrder(request):
+
+    if request.method=="GET":
+             return HttpResponse('{"msg":"转移失败","status":"fail"}')
+
+
+    if request.method=="POST":
+
+         auId=request.POST.get('id',0)
+         userId=request.POST.get('userId',0)
+         if auId!=0 and userId!=0:
+             try:
+                 obj=sql.AssociatedPU.objects.get(associateId=auId)
+                 obj.userId=userId
+                 obj.user_id=userId
+                 obj.statuse=1
+                 return HttpResponse('{"msg":"转移成功","status":"success"}')
+             except Exception as e:
+                 return HttpResponse('{"msg":"转移失败","status":"fail"}')
+
+         else:
+            return HttpResponse('{"msg":"转移失败","status":"fail"}')
 
 
 
