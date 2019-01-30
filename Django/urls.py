@@ -35,5 +35,6 @@ urlpatterns = [
     path('sendSingleWay/', views.sendSingleWay),
     path('seledctSendsing/', views.seledctSendsing),
     path('modefiedOrder/', views.modefiedOrder),
+    path('peopleTree/', views.peopleTree),
 
 ]

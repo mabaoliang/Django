@@ -156,6 +156,62 @@ def deleteUser(request):
         else:
             return HttpResponse('{"msg":"用户删除失败","status":"fail"}')
 
+
+#人员的树
+def  peopleTree(request):
+       if request.method == "GET":
+               return HttpResponse('{"msg":"创建项目失败","status":"fail"}')
+       if request.method=="POST":
+
+             data=sql.User.objects.all()
+             listA={}
+             listA["status"]="success"
+             listA["msg"]="获取成功"
+             for item in data:
+
+                   dataA=sql.User.objects.filter(superiorIds=item.userId)#.values() #child
+                   dataB=sql.User.objects.filter(userId=item.superiorIds)#.values() #super
+                   # print(dataA)
+                   # print(dataB)
+                   if dataA.count()!=0 and dataB.count()==0:  #根节点
+                       dic={}
+                       dic["name"]=item.name
+                       dic["userId"]=item.userId
+                       arr=parsePople(dataA)
+                       dic["data"]=arr
+                       listA["data"]=dic
+                       return JsonResponse(listA)
+                       # for kkk in dataA:
+                       #     dataC = sql.User.objects.filter(superiorIds=kkk.userId)  # .values() #child
+                       #     for hhh in dataC:
+                       #         dataD = sql.User.objects.filter(superiorIds=kkk.userId)  # .values() #child
+                       #
+
+
+
+
+             return HttpResponse('{"msg":"创建项目失败","status":"fail"}')
+
+
+#解析组织架构
+def parsePople(data):
+
+      arr=[]
+      for (i,item) in  enumerate(data):
+            dic={}
+            dic["name"]=item.name
+            dic["userId"]=item.userId
+            arr.append(dic)
+            dataC = sql.User.objects.filter(superiorIds=item.userId)  # .values() #child
+            if dataC.count()!=0:
+                  dic["data"]=parsePople(dataC)
+            if i==data.count()-1:
+
+               return  arr
+
+
+
+
 #添加项目
 def creatProject(request):
     if request.method == "GET":
@@ -243,7 +299,10 @@ def selectProject(request):
                   dic["projectSingleId"]=item.project.projectSingleId
                   dic["projectStatus"]=item.project.projectStatus
                   arrA.append(dic)
-               list["data"]=arrA
+
+
+               listA["data"]=arrA
+
                return JsonResponse(listA)
             else:# HttpResponse('{"msg":"用户权限获取失败","status":"fail"}')
                 data = sql.Project.objects.filter(projectSingleId=sendUserId).values()
@@ -274,7 +333,7 @@ def deleteProject(request):
             return HttpResponse('{"msg":"删除项目失败","status":"fail"}')
 
 
-#添加回执
+#用户添加回执
 def creatFeek(request):
     if request.method == "GET":
         return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
@@ -307,9 +366,9 @@ def updateFeek(request):
          sendUserId = request.POST.get("sendUserId", 0)
          feedProblem = request.POST.get("feedProblem", "")
          status=request.POST.get("status",0)
-         projectStatus=request.POST.get("projectStatus",0)
+         projectStatus=request.POST.get("projectStatus",0) #项目的完成情况
 
-         if feekId!=0 and userId!=0 and len(feedTime)  and projectId!=0 and sendUserId!=0 and len(feedProblem) and status==0:
+         if int(feekId)!=0 and int(userId)!=0  and int(projectId)!=0 and int(sendUserId)!=0 and len(feedProblem)>0 and int(status)==0:
               try:
 
                      obj=sql.Feedback.objects.get(feedId=feekId)
@@ -320,6 +379,7 @@ def updateFeek(request):
                      obj.save()
                      return HttpResponse('{"msg":"添加回执成功","status":"success"}')
               except Exception as e:
+
                        return HttpResponse('{"msg":"添加回执失败","status":"fail"}')
 
 
@@ -341,18 +401,66 @@ def selectFeek(request):
         if userId!=0 or sendUserId!=0:
 
             if userId!=0: #普通用户
-                 data=sql.Feedback.objects.filter(userId=userId).values()
+                 data=sql.Feedback.objects.filter(userId=userId)#values()
                  listA={}
-                 listA["msg"]="查询回执成功"
-                 listA["status"]="success"
-                 listA["data"]=list(data)
+                 listA["msg"] = "查询回执成功"
+                 listA["status"] = "success"
+                 arrA=[]
+                 for item in data:
+                      dic={}
+                      objA = sql.User.objects.get(userId=item.sendUserId)
+                      dic["sendName"] = objA.name
+                      dic["sendUserId"]=objA.userId
+                      dic["Name"]=item.user.name
+                      dic["userId"]=item.user.userId
+                      dic["feedId"]=item.feedId
+                      dic["feedTime"]=item.feedTime
+                      dic["projectId"]=item.project.projectId
+                      dic["projectName"]=item.project.projectName
+                      dic["projectStartTime"]=item.project.projectStartTime
+                      dic["projectEndTime"]=item.project.projectEndTime
+                      dic["projectOnTime"]=item.project.projectOnTime
+                      dic["projectStatus"]=item.project.projectStatus
+                      dic["projectFunction"]=item.project.projectFunction
+                      dic["feedComplete"]=item.feedComplete
+                      dic["feedUnfinished"]=item.feedUnfinished
+                      dic["feedConclusion"]=item.feedConclusion
+                      dic["feedProblem"]=item.feedProblem
+                      dic["feedSendTime"]=item.feedSendTime
+                      dic["status"]=item.status
+                      arrA.append(dic)
+                 listA["data"]=arrA
                  return  JsonResponse(listA)
             else: #管理员
-             dataA=sql.Feedback.objects.filter(sendUserId=sendUserId).values()
+             dataA=sql.Feedback.objects.filter(sendUserId=sendUserId)#.values()
              listB = {}
              listB["msg"] = "查询回执成功"
              listB["status"] = "success"
-             listB["data"] = list(dataA)
+             arrB=[]
+             for item in dataA:
+                 dic={}
+                 objA = sql.User.objects.get(userId=sendUserId)
+                 dic["sendName"] = objA.name
+                 dic["sendUserId"] = objA.userId
+                 dic["Name"] = item.user.name
+                 dic["userId"] = item.user.userId
+                 dic["feedId"] = item.feedId
+                 dic["feedTime"] = item.feedTime
+                 dic["projectId"] = item.project.projectId
+                 dic["projectName"] = item.project.projectName
+                 dic["projectStartTime"] = item.project.projectStartTime
+                 dic["projectEndTime"] = item.project.projectEndTime
+                 dic["projectOnTime"] = item.project.projectOnTime
+                 dic["projectStatus"] = item.project.projectStatus
+                 dic["projectFunction"] = item.project.projectFunction
+                 dic["feedComplete"] = item.feedComplete
+                 dic["feedUnfinished"] = item.feedUnfinished
+                 dic["feedConclusion"] = item.feedConclusion
+                 dic["feedProblem"] = item.feedProblem
+                 dic["feedSendTime"] = item.feedSendTime
+                 dic["status"] = item.status
+                 arrB.append(dic)
+             listB["data"] = arrB #list(dataA)
              return JsonResponse(listB)
 
         else:
@@ -399,7 +507,8 @@ def sendSingleWay(request):
           if len(userId)>0 and projectId!=0 and sendyuserId!=0:
 
               arr=[]
-              for c in userId:
+              arrId=userId.split(',')
+              for c in arrId:
                   if c!=",":
                     arr.append(c)
 
@@ -426,13 +535,15 @@ def seledctSendsing(request):
              arrA=[]
              for item in dataA:
                  dic={}
+                 objA=sql.User.objects.get(userId=item.sendUserId)
+                 dic["sendName"]=objA.name
                  dic["type"]=item.type
                  dic["status"]=item.statuse
                  dic["userName"]=item.user.userName
                  dic["name"]=item.user.name
                  dic["userId"]=item.user.userId
                  dic["tele"]=item.user.tele
-                 dic["superiorLds"]=item.user.superiorIds
+                 dic["superiorIds"]=item.user.superiorIds
                  dic["projectId"]=item.project.projectId
                  dic["projectName"]=item.project.projectName
                  dic["projectStartTime"]=item.project.projectStartTime.strftime("%Y-%m-%d %H:%M:%S")
@@ -446,7 +557,7 @@ def seledctSendsing(request):
              listA["data"]=arrA
              listA["msg"]="获取成功"
              listA["status"]="success"
-             print(listA)
+             # print(listA)
              return JsonResponse(listA)
           else: #管理员查询
               dataA = sql.AssociatedPU.objects.filter(sendUserId=sendUserId)
@@ -454,13 +565,15 @@ def seledctSendsing(request):
               arrA = []
               for item in dataA:
                   dic = {}
+                  objB=sql.User.objects.get(userId=sendUserId)
+                  dic["sendName"]=objB.name
                   dic["type"] = item.type
                   dic["status"] = item.statuse
                   dic["userName"] = item.user.userName
                   dic["name"] = item.user.name
                   dic["userId"] = item.user.userId
                   dic["tele"] = item.user.tele
-                  dic["superiorLds"] = item.user.superiorIds
+                  dic["superiorIds"] = item.user.superiorIds
                   dic["projectId"] = item.project.projectId
                   dic["projectName"] = item.project.projectName
                   dic["projectStartTime"] = item.project.projectStartTime.strftime("%Y-%m-%d %H:%M:%S")
@@ -474,7 +587,7 @@ def seledctSendsing(request):
               listA["data"] = arrA
               listA["msg"] = "获取成功"
               listA["status"] = "success"
-              print(listA)
+              # print(listA)
               return JsonResponse(listA)
         else:
           return HttpResponse('{"msg":"查询派单失败","status":"fail"}')
