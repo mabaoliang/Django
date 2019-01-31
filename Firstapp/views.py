@@ -249,7 +249,6 @@ def updateProject(request):
         projectSiginId = request.POST.get('projectSingleId', '')
         projectFunction = request.POST.get('projectFunction', '')
         projectStatus = request.POST.get('projectStatus', 0)
-        print(1313)
         if projectId!=0:
 
             try:
@@ -538,6 +537,7 @@ def seledctSendsing(request):
                  objA=sql.User.objects.get(userId=item.sendUserId)
                  dic["sendName"]=objA.name
                  dic["type"]=item.type
+                 dic["associateId"] = item.associateId
                  dic["status"]=item.statuse
                  dic["userName"]=item.user.userName
                  dic["name"]=item.user.name
@@ -568,6 +568,7 @@ def seledctSendsing(request):
                   objB=sql.User.objects.get(userId=sendUserId)
                   dic["sendName"]=objB.name
                   dic["type"] = item.type
+                  dic["associateId"]=item.associateId
                   dic["status"] = item.statuse
                   dic["userName"] = item.user.userName
                   dic["name"] = item.user.name
@@ -590,8 +591,7 @@ def seledctSendsing(request):
               # print(listA)
               return JsonResponse(listA)
         else:
-          return HttpResponse('{"msg":"查询派单失败","status":"fail"}')
-
+            return HttpResponse('{"msg":"查询派单失败","status":"fail"}')
 
 
 #转移派单
@@ -602,7 +602,7 @@ def modefiedOrder(request):
 
 
     if request.method=="POST":
-
+         # request.__getattribute__()
          auId=request.POST.get('id',0)
          userId=request.POST.get('userId',0)
          if auId!=0 and userId!=0:
@@ -611,6 +611,7 @@ def modefiedOrder(request):
                  obj.userId=userId
                  obj.user_id=userId
                  obj.statuse=1
+                 obj.save()
                  return HttpResponse('{"msg":"转移成功","status":"success"}')
              except Exception as e:
                  return HttpResponse('{"msg":"转移失败","status":"fail"}')
